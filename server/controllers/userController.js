@@ -32,6 +32,9 @@ export const login = async (req, res) => {
     try {
     const { email, password } = req.body;
     const userData = await User.findOne({email});
+    if (!userData) {
+        return res.json({success: false, message:"invalid credentials"});
+    }
     const isPasswordCorrect = await bcrypt.compare(password, userData.password);
     if(!isPasswordCorrect) {
         return res.json({success: false, message:"invalid credentials"});
@@ -67,7 +70,7 @@ export const updateProfile = async (req, res) => {
             updateUser = await User.findByIdAndUpdate(userId, {profilePic: upload.secure_url, bio, fullName},
                  {new: true});
         }
-        res.json({success: true, user: updateUser});
+        res.json({success: true, userData: updateUser, message: "Profile updated successfully"});
     }
     catch (error) {
         console.log(error);
